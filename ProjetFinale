@@ -1,0 +1,191 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+
+namespace QAProject
+{
+    // Création de la classe Etudiant
+    public class Student
+    {
+        public string LastName; // Nom de famille de l'étudiant
+        public string FirstName; // Prénom de l'étudiant
+        public int StudentNumber; // Numéro d'étudiant
+
+        
+        public Student(string lastName, string firstName, int studentNumber)
+        {
+            this.LastName = lastName;
+            this.FirstName = firstName;
+            this.StudentNumber = studentNumber;
+        }
+
+        public override string ToString()
+        {
+            return $"Nom: {LastName}, Prénom: {FirstName}, Numéro d'étudiant: {StudentNumber}";
+        }
+    }
+
+   
+    public class Course
+    {
+        public string Title; // Titre du cours
+        public string Code; // Code du cours
+        public int CourseNumber; // Numéro du cours
+
+        // Constructeur
+        public Course(string title, string code, int courseNumber)
+        {
+            this.Title = title;
+            this.Code = code;
+            this.CourseNumber = courseNumber;
+        }
+
+        public override string ToString()
+        {
+            return $"Titre: {Title}, Code: {Code}, Numéro du cours: {CourseNumber}";
+        }
+    }
+
+    // Création de la classe Grades
+    public class Grades
+    {
+        public int StudentNumber; // Numéro d'étudiant
+        public int CourseNumber; // Numéro du cours
+        public int Grade; // Note
+
+        // Constructeur
+        public Grades(int grade, int studentNumber, int courseNumber)
+        {
+            this.Grade = grade;
+            this.StudentNumber = studentNumber;
+            this.CourseNumber = courseNumber;
+        }
+
+        public override string ToString()
+        {
+            return $"Numéro d'étudiant: {StudentNumber}, Numéro du cours: {CourseNumber}, Note: {Grade}";
+        }
+    }
+
+    internal class Program
+    {
+        static void Main(string[] args)
+        {
+            // Création de listes pour stocker les étudiants, les cours et les notes
+            List<Student> students = new List<Student>();
+            List<Course> courses = new List<Course>();
+            List<Grades> grades = new List<Grades>();
+
+            // Demande à l'utilisateur de saisir le nombre d'étudiants
+            Console.WriteLine("Entrez le nombre d'étudiants :");
+            int numberOfStudents = int.Parse(Console.ReadLine());
+
+            // Saisie des informations sur les étudiants
+            for (int i = 0; i < numberOfStudents; i++)
+            {
+                Console.WriteLine($"Entrez le nom de l'étudiant {i + 1} :");
+                string lastName = Console.ReadLine();
+
+                Console.WriteLine($"Entrez le prénom de l'étudiant {i + 1} :");
+                string firstName = Console.ReadLine();
+
+                Console.WriteLine($"Entrez le numéro de l'étudiant {i + 1} :");
+                int studentNumber = int.Parse(Console.ReadLine());
+
+                students.Add(new Student(lastName, firstName, studentNumber));
+
+                Console.WriteLine(" ");
+            }
+
+            // Demande à l'utilisateur de saisir le nombre de cours
+            Console.WriteLine("Entrez le nombre de cours :");
+            int numberOfCourses = int.Parse(Console.ReadLine());
+
+            // Saisie des informations sur les cours
+            for (int i = 0; i < numberOfCourses; i++)
+            {
+                Console.WriteLine($"Entrez le titre du cours {i + 1} :");
+                string title = Console.ReadLine();
+
+                Console.WriteLine($"Entrez le code du cours {i + 1} :");
+                string code = Console.ReadLine();
+
+                Console.WriteLine($"Entrez le numéro du cours {i + 1} :");
+                int courseNumber = int.Parse(Console.ReadLine());
+
+                courses.Add(new Course(title, code, courseNumber));
+
+                Console.WriteLine(" ");
+            }
+
+            // Saisie des notes
+            foreach (Student student in students)
+            {
+                foreach (Course course in courses)
+                {
+                    Console.WriteLine($"Entrez la note pour {student.LastName} {student.FirstName} ({student.StudentNumber}) pour le cours {course.Title} ({course.Code}) :");
+                    int grade = int.Parse(Console.ReadLine());
+                    grades.Add(new Grades(grade, student.StudentNumber, course.CourseNumber));
+
+                    Console.WriteLine(" ");
+                }
+            }
+
+            // Enregistrement des données dans des fichiers texte
+            SaveData(students, "students.txt");
+            SaveData(courses, "courses.txt");
+            SaveData(grades, "grades.txt");
+
+            // Affichage du relevé de notes en temps réel
+            string answer;
+            do
+            {
+                Console.WriteLine("Entrez le numéro de l'étudiant pour afficher le relevé de notes :");
+                int studentNumber = int.Parse(Console.ReadLine());
+                DisplayGrades(students, courses, grades, studentNumber);
+
+                Console.WriteLine("Souhaitez-vous afficher un autre relevé de notes ? (O/N)");
+                answer = Console.ReadLine();
+            } while (answer == "O" || answer == "o");
+
+            Console.ReadLine();
+        }
+
+        // Méthode pour enregistrer les données dans un fichier texte
+        static void SaveData<T>(List<T> data, string fileName)
+        {
+            using (StreamWriter writer = new StreamWriter(fileName))
+            {
+                foreach (T item in data)
+                {
+                    writer.WriteLine(item.ToString());
+                }
+            }
+        }
+
+        // Méthode pour afficher le relevé de notes pour un étudiant donné
+        static void DisplayGrades(List<Student> students, List<Course> courses, List<Grades> grades, int studentNumber)
+        {
+            Student student = students.Find(s => s.StudentNumber == studentNumber);
+
+            Console.WriteLine($"Relevé de notes pour l'étudiant(e) {student.LastName} {student.FirstName} ({student.StudentNumber}) :");
+
+            foreach (Grades grade in grades)
+            {
+                Course courseGrade = courses.Find(c => c.CourseNumber == grade.CourseNumber);
+
+                if (grade.StudentNumber == studentNumber)
+                {
+                    if (student != null && courseGrade != null)
+                    {
+                        Console.WriteLine($"Cours : {courseGrade.Title} ({courseGrade.Code}), Note : {grade.Grade}");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Erreur : Les informations sur l'étudiant ou le cours sont introuvables.");
+                    }
+                }
+            }
+        }
+    }
+}
