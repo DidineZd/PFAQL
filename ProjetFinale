@@ -163,7 +163,7 @@ namespace QAProject
             }
         }
 
-        // Méthode pour afficher le relevé de notes pour un étudiant donné
+        // Méthode pour afficher le relevé de notes pour un étudiant souhaite
         static void DisplayGrades(List<Student> students, List<Course> courses, List<Grades> grades, int studentNumber)
         {
             Student student = students.Find(s => s.StudentNumber == studentNumber);
