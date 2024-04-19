@@ -7,11 +7,12 @@ namespace QAProject
     // Création de la classe Etudiant
     public class Student
     {
+        
         public string LastName; // Nom de famille de l'étudiant
         public string FirstName; // Prénom de l'étudiant
         public int StudentNumber; // Numéro d'étudiant
 
-        
+        // Constructeur
         public Student(string lastName, string firstName, int studentNumber)
         {
             this.LastName = lastName;
